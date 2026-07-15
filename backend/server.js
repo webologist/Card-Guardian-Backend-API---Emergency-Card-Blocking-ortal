@@ -70,7 +70,7 @@ const Bank = mongoose.model('Bank', bankSchema);
 const Activity = mongoose.model('Activity', activitySchema);
 const OTPSession = mongoose.model('OTPSession', otpSessionSchema);
 
-const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+const generateOTP = () => '123456'; // TEMP: fixed OTP for all numbers (Twilio not yet wired up)
 
 const sendOTP = async (phoneNumber, otp) => {
   console.log(`[OTP] ${phoneNumber}: ${otp}`);
