@@ -96,7 +96,7 @@ export default function App() {
         }
       )
 
-      setCurrentScreen('sms-confirmation')
+      setCurrentScreen(method === 'email' ? 'email-confirmation' : 'sms-confirmation')
     } catch (error) {
       alert('Error: ' + error.response?.data?.error)
     }
@@ -310,13 +310,23 @@ export default function App() {
             {blockMethod === 'sms' && <i className="ti ti-check"></i>}
           </div>
 
-          <div className="card-method" onClick={() => setBlockMethod('email')}>
+          <div
+            className="card-method"
+            style={{
+              backgroundColor: blockMethod === 'email' ? '#e8f4f8' : '#f5f5f5',
+              borderColor: blockMethod === 'email' ? '#0066cc' : '#ddd'
+            }}
+            onClick={() => {
+              setBlockMethod('email')
+              handleBlockCard('email')
+            }}
+          >
             <i className="ti ti-mail"></i>
             <div>
               <h3>Send email</h3>
               <p>Auto-draft and send</p>
             </div>
-            <i className="ti ti-chevron-right"></i>
+            {blockMethod === 'email' && <i className="ti ti-check"></i>}
           </div>
 
           <button className="btn btn-primary" onClick={handleBlockCard}>
@@ -405,6 +415,108 @@ export default function App() {
             setCurrentScreen('dashboard')
           }}>
             I've sent the SMS
+          </button>
+          <button className="btn btn-secondary" onClick={() => setCurrentScreen('blocking')}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // EMAIL CONFIRMATION SCREEN
+  if (currentScreen === 'email-confirmation' && bankInfo) {
+    return (
+      <div className="container">
+        <div className="card">
+          <button className="back-btn" onClick={() => setCurrentScreen('blocking')}>
+            <i className="ti ti-arrow-left"></i> Back
+          </button>
+
+          <h2>Block via Email</h2>
+
+          <div className="alert alert-warning">
+            <i className="ti ti-info-circle"></i>
+            <p>{bankInfo.name} will confirm within 2-5 minutes</p>
+          </div>
+
+          <div style={{
+            background: '#eef7ee',
+            padding: '12px',
+            borderRadius: '8px',
+            marginBottom: '16px',
+            border: '1px solid #cfe8cf'
+          }}>
+            <p className="label" style={{ marginTop: 0 }}>How to send this email</p>
+            <ol style={{ paddingLeft: '18px', margin: 0, fontSize: '13px', lineHeight: '1.7' }}>
+              <li>Open the email app or account registered with {bankInfo.name}.</li>
+              <li>Start a new email addressed to the email address shown below.</li>
+              <li>Use the subject line shown below exactly as given.</li>
+              <li>Tap "Copy" to copy the exact message below, then paste it into the email body (or type it exactly as shown).</li>
+              <li>Send the email from your registered email address only — it will not work from any other address.</li>
+              <li>Wait 2-5 minutes for a confirmation reply from {bankInfo.name} that your card is blocked.</li>
+              <li>Once you've sent it, tap "I've sent the email" below to log this action.</li>
+            </ol>
+          </div>
+
+          <div style={{
+            background: '#f5f5f5',
+            padding: '12px',
+            borderRadius: '8px',
+            marginBottom: '16px'
+          }}>
+            <p className="text-muted" style={{ fontSize: '11px' }}>Send to</p>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <code style={{ flex: 1, fontSize: '14px', fontWeight: 'bold' }}>
+                {bankInfo.email?.address || 'N/A'}
+              </code>
+              <button
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0066cc' }}
+                onClick={() => {
+                  navigator.clipboard.writeText(bankInfo.email?.address || '')
+                  alert('Email address copied!')
+                }}
+              >
+                <i className="ti ti-copy"></i> Copy
+              </button>
+            </div>
+          </div>
+
+          <label className="label">Subject</label>
+          <input
+            readOnly
+            value={bankInfo.email?.subject || ''}
+            style={{
+              width: '100%',
+              padding: '10px',
+              borderRadius: '6px',
+              border: '1px solid #ddd',
+              fontFamily: 'monospace',
+              marginBottom: '12px'
+            }}
+          />
+
+          <label className="label">Message to send</label>
+          <textarea
+            readOnly
+            value={smsMessage}
+            style={{
+              width: '100%',
+              padding: '10px',
+              borderRadius: '6px',
+              border: '1px solid #ddd',
+              fontFamily: 'monospace',
+              minHeight: '80px',
+              marginBottom: '12px'
+            }}
+          />
+          <small>Auto-prepared. Copy and paste into the email.</small>
+
+          <button className="btn btn-primary" onClick={() => {
+            alert('Block request sent! Check email confirmation from ' + bankInfo.name)
+            setCurrentScreen('dashboard')
+          }}>
+            I've sent the email
           </button>
           <button className="btn btn-secondary" onClick={() => setCurrentScreen('blocking')}>
             Cancel
