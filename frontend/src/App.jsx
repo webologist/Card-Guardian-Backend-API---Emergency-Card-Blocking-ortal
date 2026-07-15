@@ -4,7 +4,7 @@ import axios from 'axios'
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('login')
+  const [currentScreen, setCurrentScreen] = useState(localStorage.getItem('token') ? 'dashboard' : 'login')
   const [token, setToken] = useState(localStorage.getItem('token'))
   const [userPhone, setUserPhone] = useState(localStorage.getItem('userPhone'))
   const [banks, setBanks] = useState([])
