@@ -74,7 +74,7 @@ export default function App() {
     setOtp('')
   }
 
-  const handleBlockCard = async () => {
+  const handleBlockCard = async (method = blockMethod) => {
     if (!selectedBank || !cardType || !last4) {
       alert('Please fill all fields')
       return
@@ -87,7 +87,7 @@ export default function App() {
       
       await axios.post(`${API_URL}/activity/log`, 
         {
-          action: 'block_' + blockMethod + '_initiated',
+          action: 'block_' + method + '_initiated',
           bankName: bankInfo.name,
           cardType: cardType
         },
@@ -297,7 +297,10 @@ export default function App() {
               backgroundColor: blockMethod === 'sms' ? '#e8f4f8' : '#f5f5f5',
               borderColor: blockMethod === 'sms' ? '#0066cc' : '#ddd'
             }}
-            onClick={() => setBlockMethod('sms')}
+            onClick={() => {
+              setBlockMethod('sms')
+              handleBlockCard('sms')
+            }}
           >
             <i className="ti ti-phone"></i>
             <div>
@@ -338,6 +341,24 @@ export default function App() {
           <div className="alert alert-warning">
             <i className="ti ti-info-circle"></i>
             <p>{bankInfo.name} will confirm within 2-5 minutes</p>
+          </div>
+
+          <div style={{
+            background: '#eef7ee',
+            padding: '12px',
+            borderRadius: '8px',
+            marginBottom: '16px',
+            border: '1px solid #cfe8cf'
+          }}>
+            <p className="label" style={{ marginTop: 0 }}>How to send this SMS</p>
+            <ol style={{ paddingLeft: '18px', margin: 0, fontSize: '13px', lineHeight: '1.7' }}>
+              <li>Open the SMS/messaging app on the mobile phone registered with {bankInfo.name}.</li>
+              <li>Start a new message addressed to the number shown below.</li>
+              <li>Tap "Copy" to copy the exact message below, then paste it into the SMS (or type it exactly as shown).</li>
+              <li>Send the SMS from your registered mobile number only — it will not work from any other number.</li>
+              <li>Wait 2-5 minutes for a confirmation reply from {bankInfo.name} that your card is blocked.</li>
+              <li>Once you've sent it, tap "I've sent the SMS" below to log this action.</li>
+            </ol>
           </div>
 
           <div style={{
